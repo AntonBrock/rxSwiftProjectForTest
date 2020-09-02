@@ -6,6 +6,9 @@
 //  Copyright © 2020 Anton Dobrynin. All rights reserved.
 //
 
+// https://victorqi.gitbooks.io/rxswift/content/observables-aka-sequences.html
+// https://rxmarbles.com
+
 import UIKit
 
 import RxCocoa
@@ -27,7 +30,44 @@ class ViewController: UIViewController {
         tableView.dataSource = self
         
         rxSearchBar()
+        
+        testFilterOperator()
+        testTransformationOperator()
+        testConditionalOpertor()
     }
+    
+    // фильтрующий опрератор
+    func testFilterOperator() {
+        let sub = Observable.of(1, 20, 5, 40, 6, 50).filter{ $0 > 10}
+        sub.subscribe({ (event) in
+            print(event) // 20, 40, 50
+            }).disposed(by: disposeBag)
+    }
+    
+    // трансформирующий оператор
+    func testTransformationOperator() {
+        let items = [1, 2, 3]
+        _ = Observable
+            .from(items)
+            .map{ $0 * 10 }
+            .subscribe({ (event) in
+                print(event) // 10, 20, 30
+            })
+    }
+    
+    // комбинирующий оператор
+    func testConditionalOpertor() {
+        let firstSeq = Observable.of(1, 2, 4)
+        let secondSeq = Observable.of(6, 8, 9)
+        
+        let bothSeq = Observable.of(firstSeq, secondSeq)
+        let mergeSeq = bothSeq.merge()
+        
+        mergeSeq.subscribe({ (event) in
+            print(event) // 1,2,6,4,8,9
+        }).disposed(by: disposeBag)
+    }
+    
     
     func rxSearchBar() {
         searchBar
